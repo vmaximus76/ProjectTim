@@ -34,7 +34,6 @@ docker-compose.override.yml
 .DS_Store
 
 # Project-specific
-__init__.py
 *.pyc
 *.pyo
 *.pyd
