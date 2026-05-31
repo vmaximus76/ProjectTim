@@ -1,52 +1,60 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "TIM-IR",
-  "type": "object",
-  "required": ["type"],
-  "properties": {
-    "type": {
-      "type": "string",
-      "enum": [
-        "var",
-        "const",
-        "add",
-        "sub",
-        "mul",
-        "div",
-        "eq",
-        "lt",
-        "gt",
-        "and",
-        "or",
-        "not",
-        "lookup"
-      ]
-    },
-    "name": {
-      "type": "string"
-    },
-    "value": {
-      "type": "number"
-    },
-    "left": {
-      "$ref": "#/properties/type"
-    },
-    "right": {
-      "$ref": "#/properties/type"
-    },
-    "args": {
-      "type": "array",
-      "items": {
-        "$ref": "#/properties/type"
+  "$defs": {
+    "node": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "var",
+            "const",
+            "add",
+            "sub",
+            "mul",
+            "div",
+            "eq",
+            "lt",
+            "gt",
+            "and",
+            "or",
+            "not",
+            "lookup"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "left": {
+          "$ref": "#/$defs/node"
+        },
+        "right": {
+          "$ref": "#/$defs/node"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          },
+          "minItems": 1
+        },
+        "arg": {
+          "$ref": "#/$defs/node"
+        },
+        "operands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/node"
+          }
+        }
       },
-      "minItems": 1
-    },
-    "operands": {
-      "type": "array",
-      "items": {
-        "$ref": "#/properties/type"
-      }
+      "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "$ref": "#/$defs/node"
 }

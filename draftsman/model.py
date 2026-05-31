@@ -52,4 +52,6 @@ def parse_lookup(name: str) -> TIMIRNode:
 
 
 def parse_binary_op(op_type: TIMOperation, left: TIMIRNode, right: TIMIRNode) -> TIMIRNode:
+    if op_type in {TIMOperation.ADD, TIMOperation.SUB, TIMOperation.MUL, TIMOperation.DIV}:
+        return TIMIRNode(op_type, args=[left.to_dict(), right.to_dict()])
     return TIMIRNode(op_type, left=left.to_dict(), right=right.to_dict())
