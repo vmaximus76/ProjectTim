@@ -1,10 +1,9 @@
 # CI + Deploy workflow for Project TIM
 # ---------------------------------------------------
-# This workflow runs on every push/PR to the `main` branch.
-# It:
-#   1️⃣ Installs Python and runs the pytest suite.
-#   2️⃣ Builds the Docker image and pushes it to Docker Hub.
-#   3️⃣ Deploys the freshly‑pushed image to Fly.io (free tier).
+# Runs pytest on every push/PR to `main`.
+# Deploy to Docker Hub + Fly.io runs only when the repository
+# variable ENABLE_DEPLOY is set to "true" and the required secrets
+# (DOCKERHUB_USERNAME, DOCKERHUB_TOKEN, FLY_API_TOKEN) are configured.
 # ---------------------------------------------------
 
 name: CI + Deploy
@@ -16,14 +15,13 @@ on:
     branches: [ main ]
 
 jobs:
-  build-test-deploy:
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      # ---------- Checkout ----------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ---------- Python tests ----------
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -35,7 +33,15 @@ jobs:
           pip install -r requirements.txt
           pytest -q
 
-      # ---------- Docker build & push ----------
+  deploy:
+    name: Deploy
+    needs: test
+    if: github.event_name == 'push' && vars.ENABLE_DEPLOY == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -52,7 +58,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/tim-inspector:latest
 
-      # ---------- Fly.io deployment ----------
       - name: Install Fly CLI
         run: |
           curl -L https://fly.io/install.sh | sh
@@ -63,9 +68,7 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: |
           export PATH=$HOME/.fly/bin:$PATH
-          # Create the app if it does not exist (idempotent)
           flyctl apps list | grep tim-inspector || flyctl apps create tim-inspector
-          # Deploy the newly‑pushed image
           flyctl deploy \
             --image ${{ secrets.DOCKERHUB_USERNAME }}/tim-inspector:latest \
             --app tim-inspector \
