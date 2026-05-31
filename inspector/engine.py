@@ -44,7 +44,7 @@ def _translate(node: Dict[str, Any]) -> z3.ArithRef:
         return z3.IntVal(int(node["value"]))
     if node_type == "var":
         # Symbolic variable – prefixed to avoid clashes with potential ADU names
-        return z3.Int(f"var_{node["name"]}")
+        return z3.Int(f"var_{node['name']}")
     if node_type == "lookup":
         # Resolve ADU value from the immutable registry (must be numeric)
         adu_name = node["name"]

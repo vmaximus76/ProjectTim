@@ -34,7 +34,7 @@ class TIMIRNode:
                 type_enum = op
                 break
         if not type_enum:
-            raise ValueError(f'Unknown TIM-IR node type: {data['type']}')
+            raise ValueError(f"Unknown TIM-IR node type: {data['type']}")
         return cls(type_enum, **data)
 
 # Example parser functions
