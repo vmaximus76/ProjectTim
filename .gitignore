@@ -1,0 +1,44 @@
+# TensorFlow / Keras
+*.h5
+*.cbk
+
+# PyInstaller
+__pycache__/
+*.spec
+*.exe
+
+# Virtual environment
+venv/
+.env/
+ENV/
+
+# Docker
+docker-compose.override.yml
+
+# Bytecode
+*.py[cod]
+*$py.class
+
+# Logs
+*.log
+
+# SQLite
+*.sqlite3
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Project-specific
+__init__.py
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.claude/

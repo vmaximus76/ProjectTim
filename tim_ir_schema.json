@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "TIM-IR",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "var",
+        "const",
+        "add",
+        "sub",
+        "mul",
+        "div",
+        "eq",
+        "lt",
+        "gt",
+        "and",
+        "or",
+        "not",
+        "lookup"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "value": {
+      "type": "number"
+    },
+    "left": {
+      "$ref": "#/properties/type"
+    },
+    "right": {
+      "$ref": "#/properties/type"
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/type"
+      },
+      "minItems": 1
+    },
+    "operands": {
+      "type": "array",
+      "items": {
+        "$ref": "#/properties/type"
+      }
+    }
+  },
+  "additionalProperties": false
+}
