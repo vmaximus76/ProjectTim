@@ -9,7 +9,7 @@ primary_region = "iad"
 [build]
 
 [env]
-  TIM_REGISTRY_DB = "/data/tim_registry.db"
+  TIM_REGISTRY_DB = "/home/timuser/app/registry/tim_registry.db"
 
 [http_service]
   internal_port = 8080
@@ -25,10 +25,6 @@ primary_region = "iad"
     method = "GET"
     path = "/health"
     timeout = "5s"
-
-[[mounts]]
-  source = "tim_registry"
-  destination = "/data"
 
 [[vm]]
   memory = "1gb"
