@@ -1,0 +1,36 @@
+# Fly.io app config for ProjectTim
+# Create the app:  fly apps create projecttim
+# First deploy:    fly deploy
+# Custom domain:   fly certs add api.yourdomain.com
+
+app = "projecttim"
+primary_region = "iad"
+
+[build]
+
+[env]
+  TIM_REGISTRY_DB = "/data/tim_registry.db"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "15s"
+    interval = "30s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+
+[[mounts]]
+  source = "tim_registry"
+  destination = "/data"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

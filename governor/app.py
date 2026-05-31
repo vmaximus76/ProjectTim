@@ -71,5 +71,5 @@ def verify():
         }), 500
 
 if __name__ == '__main__':
-    # For development only; production should use gunicorn or similar
-    app.run(host='0.0.0.0', port=8080, debug=False)
+    port = int(os.getenv('PORT', 8080))
+    app.run(host='0.0.0.0', port=port, debug=False)

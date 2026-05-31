@@ -1,9 +1,7 @@
 # CI + Deploy workflow for Project TIM
 # ---------------------------------------------------
 # Runs pytest on every push/PR to `main`.
-# Deploy to Docker Hub + Fly.io runs only when the repository
-# variable ENABLE_DEPLOY is set to "true" and the required secrets
-# (DOCKERHUB_USERNAME, DOCKERHUB_TOKEN, FLY_API_TOKEN) are configured.
+# Deploys to Fly.io when ENABLE_DEPLOY is "true" and FLY_API_TOKEN is set.
 # ---------------------------------------------------
 
 name: CI + Deploy
@@ -34,7 +32,7 @@ jobs:
           pytest -q
 
   deploy:
-    name: Deploy
+    name: Deploy to Fly.io
     needs: test
     if: github.event_name == 'push' && vars.ENABLE_DEPLOY == 'true'
     runs-on: ubuntu-latest
@@ -42,35 +40,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tim-inspector:latest
-
-      - name: Install Fly CLI
-        run: |
-          curl -L https://fly.io/install.sh | sh
-          export PATH=$HOME/.fly/bin:$PATH
+      - name: Set up Flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
+        run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
-        run: |
-          export PATH=$HOME/.fly/bin:$PATH
-          flyctl apps list | grep tim-inspector || flyctl apps create tim-inspector
-          flyctl deploy \
-            --image ${{ secrets.DOCKERHUB_USERNAME }}/tim-inspector:latest \
-            --app tim-inspector \
-            --remote-only \
-            --ha=false
